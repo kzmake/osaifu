@@ -1,5 +1,5 @@
-mod entity;
+mod resource;
 mod id;
 
-pub use self::entity::*;
+pub use self::resource::*;
 pub use self::id::*;
