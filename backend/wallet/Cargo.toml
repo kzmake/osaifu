@@ -8,6 +8,18 @@ edition = "2018"
 members = ["domain", "usecase", "interface", "infrastructure"]
 
 [dependencies]
+domain = { path = "./domain" }
+usecase = { path = "./usecase" }
+interface = { path = "./interface" }
+infrastructure = { path = "./infrastructure" }
+anyhow = "1.0.44"
+tokio = { version = "1.12.0", features = [
+  "rt-multi-thread",
+  "time",
+  "fs",
+  "macros",
+  "net",
+] }
 
 [[bin]]
 name = "app"
