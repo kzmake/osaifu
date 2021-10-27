@@ -5,18 +5,38 @@ services:
     build:
       context: .
       dockerfile: .devcontainer/Dockerfile
-      args:
-        VARIANT: bullseye
-    command: "sh -c 'trap : SIGTERM SIGINT; sleep infinity & wait'"
     environment:
+      CARGO_BUILD_TARGET_DIR: /cache/target
+      WALLET_DATABASE_URL: postgres://postgres:postgres@localhost/wallet
       DOCKER_HOST: tcp://docker:2376
       DOCKER_TLS_VERIFY: 1
       DOCKER_CERT_PATH: /certs/client
+      KUBE_CONFIG: /kube
+    tty: true
+    working_dir: /workspace
     volumes:
-      - .:/app
+      # - .:/workspace:delegated
       - docker-certs-client:/certs/client
       - kube-config:/kube
-    network_mode: service:docker
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+    privileged: true
+    init: true
+    ports:
+      - 5432:5432
+
+  db:
+    image: postgres:latest
+    restart: unless-stopped
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: postgres
+    network_mode: service:dev
 
   docker:
     image: docker:20-dind
@@ -24,8 +44,10 @@ services:
     volumes:
       - docker-data:/var/lib/docker
       - docker-certs-client:/certs/client
+    network_mode: service:dev
 
 volumes:
   docker-data:
   docker-certs-client:
   kube-config:
+  postgres-data:
