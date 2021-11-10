@@ -1,0 +1,18 @@
+{
+  "files.watcherExclude": {
+    "**/target": true
+  },
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "wallet",
+      "group": "localhost",
+      "database": "wallet",
+      "username": "postgres",
+      "password": "postgres"
+    }
+  ]
+}

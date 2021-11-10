@@ -8,14 +8,14 @@ services:
     environment:
       CARGO_BUILD_TARGET_DIR: /cache/target
       WALLET_DATABASE_URL: postgres://postgres:postgres@localhost/wallet
-      DOCKER_HOST: tcp://docker:2376
+      DOCKER_HOST: tcp://localhost:2376
       DOCKER_TLS_VERIFY: 1
       DOCKER_CERT_PATH: /certs/client
-      KUBE_CONFIG: /kube
+      KUBECONFIG: /kube/config
     tty: true
     working_dir: /workspace
     volumes:
-      # - .:/workspace:delegated
+      - .:/workspace:delegated
       - docker-certs-client:/certs/client
       - kube-config:/kube
     cap_add:
