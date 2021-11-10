@@ -1,30 +1,38 @@
 use crate::osaifu_wallet_v1::Wallet as PBWallet;
 use crate::osaifu_wallet_v1::{CreateRequest, CreateResponse};
+use crate::osaifu_wallet_v1::{DeleteRequest, DeleteResponse};
 use crate::osaifu_wallet_v1::{GetRequest, GetResponse};
 use anyhow::Result;
 use derive_new::new;
 use tonic::{Request, Response, Status};
-use usecase::port::{CreateWalletInputData, CreateWalletOutputData, GetWalletInputData, GetWalletOutputData, Port};
+use usecase::port::{
+    CreateWalletInputData, CreateWalletOutputData, DeleteWalletInputData, DeleteWalletOutputData,
+    GetWalletInputData, GetWalletOutputData, Port,
+};
 
 pub trait Controller {
     fn create(&self, request: Request<CreateRequest>) -> Result<Response<CreateResponse>, Status>;
     fn get(&self, request: Request<GetRequest>) -> Result<Response<GetResponse>, Status>;
+    fn delete(&self, request: Request<DeleteRequest>) -> Result<Response<DeleteResponse>, Status>;
 }
 
 #[derive(new)]
-pub struct WalletController<Create, Get>
+pub struct WalletController<Create, Get, Delete>
 where
     Create: Port<CreateWalletInputData, CreateWalletOutputData>,
     Get: Port<GetWalletInputData, GetWalletOutputData>,
+    Delete: Port<DeleteWalletInputData, DeleteWalletOutputData>,
 {
     create_wallet: Create,
     get_wallet: Get,
+    delete_wallet: Delete,
 }
 
-impl<Create, Get> Controller for WalletController<Create, Get>
+impl<Create, Get, Delete> Controller for WalletController<Create, Get, Delete>
 where
     Create: Port<CreateWalletInputData, CreateWalletOutputData>,
     Get: Port<GetWalletInputData, GetWalletOutputData>,
+    Delete: Port<DeleteWalletInputData, DeleteWalletOutputData>,
 {
     fn create(&self, request: Request<CreateRequest>) -> Result<Response<CreateResponse>, Status> {
         let input = CreateWalletInputData::new(request.get_ref().owner.to_string());
@@ -55,6 +63,15 @@ where
             Err(_) => Err(Status::internal("error")),
         }
     }
+
+    fn delete(&self, request: Request<DeleteRequest>) -> Result<Response<DeleteResponse>, Status> {
+        let input = DeleteWalletInputData::new(request.get_ref().id.to_string());
+
+        match self.delete_wallet.handle(input) {
+            Ok(_) => Ok(Response::new(DeleteResponse {})),
+            Err(_) => Err(Status::internal("error")),
+        }
+    }
 }
 
 #[cfg(test)]
@@ -79,12 +96,16 @@ mod tests {
 
         let mut create = MockPort::<CreateWalletInputData, CreateWalletOutputData>::new();
         let mut get = MockPort::<GetWalletInputData, GetWalletOutputData>::new();
+        let mut delete = MockPort::<DeleteWalletInputData, DeleteWalletOutputData>::new();
         create
             .expect_handle()
             .returning(|_| Ok(CreateWalletOutputData::new(new_wallet())));
         get.expect_handle()
             .returning(|_| Ok(GetWalletOutputData::new(new_wallet())));
-        let sut = WalletController::new(create, get);
+        delete
+            .expect_handle()
+            .returning(|_| Ok(DeleteWalletOutputData::new()));
+        let sut = WalletController::new(create, get, delete);
 
         assert_eq!(
             sut.create(Request::new(CreateRequest {
@@ -109,9 +130,11 @@ mod tests {
 
         let mut create = MockPort::<CreateWalletInputData, CreateWalletOutputData>::new();
         let mut get = MockPort::<GetWalletInputData, GetWalletOutputData>::new();
+        let mut delete = MockPort::<DeleteWalletInputData, DeleteWalletOutputData>::new();
         create.expect_handle().returning(|_| bail!("error"));
         get.expect_handle().returning(|_| bail!("error"));
-        let sut = WalletController::new(create, get);
+        delete.expect_handle().returning(|_| bail!("error"));
+        let sut = WalletController::new(create, get, delete);
 
         assert!(sut
             .create(Request::new(CreateRequest {
@@ -126,12 +149,16 @@ mod tests {
 
         let mut create = MockPort::<CreateWalletInputData, CreateWalletOutputData>::new();
         let mut get = MockPort::<GetWalletInputData, GetWalletOutputData>::new();
+        let mut delete = MockPort::<DeleteWalletInputData, DeleteWalletOutputData>::new();
         create
             .expect_handle()
             .returning(|_| Ok(CreateWalletOutputData::new(new_wallet())));
         get.expect_handle()
             .returning(|_| Ok(GetWalletOutputData::new(new_wallet())));
-        let sut = WalletController::new(create, get);
+        delete
+            .expect_handle()
+            .returning(|_| Ok(DeleteWalletOutputData::new()));
+        let sut = WalletController::new(create, get, delete);
 
         assert_eq!(
             sut.get(Request::new(GetRequest {
@@ -156,9 +183,11 @@ mod tests {
 
         let mut create = MockPort::<CreateWalletInputData, CreateWalletOutputData>::new();
         let mut get = MockPort::<GetWalletInputData, GetWalletOutputData>::new();
+        let mut delete = MockPort::<DeleteWalletInputData, DeleteWalletOutputData>::new();
         create.expect_handle().returning(|_| bail!("error"));
         get.expect_handle().returning(|_| bail!("error"));
-        let sut = WalletController::new(create, get);
+        delete.expect_handle().returning(|_| bail!("error"));
+        let sut = WalletController::new(create, get, delete);
 
         assert!(sut
             .get(Request::new(GetRequest {

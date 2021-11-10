@@ -6,6 +6,7 @@ use infrastructure::ulid::IdRepository;
 use interface::controller::WalletController;
 use std::env;
 use usecase::interactor::CreateWalletInteractor;
+use usecase::interactor::DeleteWalletInteractor;
 use usecase::interactor::GetWalletInteractor;
 
 #[tokio::main]
@@ -18,7 +19,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let wallet_repository = WalletRepository::new(connections.clone());
     let create = CreateWalletInteractor::new(id_repository, wallet_repository.clone());
     let get = GetWalletInteractor::new(wallet_repository.clone());
-    let controller = WalletController::new(create, get);
+    let delete = DeleteWalletInteractor::new(wallet_repository.clone());
+    let controller = WalletController::new(create, get, delete);
     let service = Service::new(controller);
 
     let addr = "0.0.0.0:50051".parse()?;

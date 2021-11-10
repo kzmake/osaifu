@@ -1,9 +1,9 @@
 mod connection;
-mod wallet;
 mod models;
 mod schema;
+mod wallet;
 
 pub use self::connection::*;
-pub use self::wallet::*;
 pub use self::models::*;
 pub use self::schema::*;
+pub use self::wallet::*;

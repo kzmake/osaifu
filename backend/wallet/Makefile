@@ -38,3 +38,4 @@ run:
 grpc:
 	@grpcurl -plaintext -proto ../../api/osaifu/wallet/v1/wallet.proto -d '{"owner": "kzmake"}' localhost:50051 osaifu.wallet.v1.WalletService/Create
 	@grpcurl -plaintext -proto ../../api/osaifu/wallet/v1/wallet.proto -d '{"id": "0123456789ABCDEFGHJKMNPQRSTVWXYZ"}' localhost:50051 osaifu.wallet.v1.WalletService/Get
+	@grpcurl -plaintext -proto ../../api/osaifu/wallet/v1/wallet.proto -d '{"id": "0123456789ABCDEFGHJKMNPQRSTVWXYZ"}' localhost:50051 osaifu.wallet.v1.WalletService/Delete

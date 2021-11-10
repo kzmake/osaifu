@@ -1,28 +1,30 @@
-use crate::port::{GetWalletInputData, GetWalletOutputData, Port};
+use crate::port::{DeleteWalletInputData, DeleteWalletOutputData, Port};
 use anyhow::{Error, Result};
 use derive_new::new;
 use domain::entity::Wallet;
+use domain::repository::DeleteRepository;
 use domain::repository::GetRepository;
 use domain::vo::Id;
 
 #[derive(new)]
-pub struct GetWalletInteractor<S>
+pub struct DeleteWalletInteractor<S>
 where
-    S: GetRepository<Wallet>,
+    S: GetRepository<Wallet> + DeleteRepository<Wallet>,
 {
     wallet_repository: S,
 }
 
-impl<S> Port<GetWalletInputData, GetWalletOutputData> for GetWalletInteractor<S>
+impl<S> Port<DeleteWalletInputData, DeleteWalletOutputData> for DeleteWalletInteractor<S>
 where
-    S: GetRepository<Wallet>,
+    S: GetRepository<Wallet> + DeleteRepository<Wallet>,
 {
-    fn handle(&self, input: GetWalletInputData) -> Result<GetWalletOutputData, Error> {
+    fn handle(&self, input: DeleteWalletInputData) -> Result<DeleteWalletOutputData, Error> {
         let id = input.id.parse::<Id<Wallet>>()?;
 
         let wallet = self.wallet_repository.get(id)?;
+        self.wallet_repository.delete(wallet)?;
 
-        Ok(GetWalletOutputData::new(wallet))
+        Ok(DeleteWalletOutputData::new())
     }
 }
 
@@ -82,7 +84,7 @@ mod tests {
     }
 
     #[test]
-    fn test_get_wallet_handle() {
+    fn test_delete_wallet_handle() {
         let wallet_repository = MockWalletRepository::new();
         let wallet_a = WalletBuilder::default()
             .id("01F8MECHZX3TBDSZ7XRADM79XE".parse::<Id<Wallet>>().unwrap())
@@ -98,22 +100,22 @@ mod tests {
         wallet_repository.create(wallet_a.clone()).unwrap();
         wallet_repository.create(wallet_b.clone()).unwrap();
 
-        let sut = GetWalletInteractor::new(wallet_repository);
+        let sut = DeleteWalletInteractor::new(wallet_repository);
 
         assert_eq!(
-            sut.handle(GetWalletInputData::new(wallet_a.id().to_string()))
+            sut.handle(DeleteWalletInputData::new(wallet_a.id().to_string()))
                 .unwrap(),
-            GetWalletOutputData::new(wallet_a.clone())
+            DeleteWalletOutputData::new()
         );
 
         // ok
         assert!(sut
-            .handle(GetWalletInputData::new(wallet_b.id().to_string()))
+            .handle(DeleteWalletInputData::new(wallet_b.id().to_string()))
             .is_ok());
 
         // err
         assert!(sut
-            .handle(GetWalletInputData::new("NOTFOUND_ID".to_string()))
+            .handle(DeleteWalletInputData::new("NOTFOUND_ID".to_string()))
             .is_err());
     }
 }

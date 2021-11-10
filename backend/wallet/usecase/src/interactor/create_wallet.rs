@@ -103,7 +103,8 @@ mod tests {
         let sut = CreateWalletInteractor::new(id_repository, wallet_repository);
 
         assert_eq!(
-            sut.handle(CreateWalletInputData::new("alice".to_string())).unwrap(),
+            sut.handle(CreateWalletInputData::new("alice".to_string()))
+                .unwrap(),
             CreateWalletOutputData::new(
                 WalletBuilder::default()
                     .id("01F8MECHZX3TBDSZ7XRADM79XE".parse::<Id<Wallet>>().unwrap())
@@ -114,7 +115,9 @@ mod tests {
         );
 
         // ok
-        assert!(sut.handle(CreateWalletInputData::new("alice".to_string())).is_ok());
+        assert!(sut
+            .handle(CreateWalletInputData::new("alice".to_string()))
+            .is_ok());
 
         // err
         // assert!(sut.handle(CreateWalletInputData::new()).is_err());

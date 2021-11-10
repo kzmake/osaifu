@@ -1,5 +1,5 @@
-mod resource;
 mod id;
+mod resource;
 
-pub use self::resource::*;
 pub use self::id::*;
+pub use self::resource::*;
