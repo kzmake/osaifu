@@ -1,0 +1,12 @@
+version: v1
+name: buf.build/kzmake/osaifu
+build:
+  excludes:
+    - target
+    - zz_generated
+lint:
+  use:
+    - DEFAULT
+breaking:
+  use:
+    - FILE
