@@ -2,7 +2,7 @@ version: v1
 managed:
   enabled: true
   go_package_prefix:
-    default: github.com/kzmake/osaifu/backend/gateway/zz_generated/osaifu/wallet/v1
+    default: github.com/kzmake/osaifu/backend/gateway/zz_generated
 plugins:
   - name: go
     out: backend/gateway/zz_generated
