@@ -41,7 +41,10 @@ where
         self.controller.get(request)
     }
 
-    async fn delete(&self, request: Request<DeleteRequest>) -> Result<Response<DeleteResponse>, Status> {
+    async fn delete(
+        &self,
+        request: Request<DeleteRequest>,
+    ) -> Result<Response<DeleteResponse>, Status> {
         println!("{:?}", request); // TODO: logger を実装して println! を削除する
 
         self.controller.delete(request)
