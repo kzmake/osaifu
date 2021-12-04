@@ -1,4 +1,4 @@
-use crate::port::{ListWalletsInputData, ListWalletsOutputData, Port};
+use crate::port::{ListWalletsInputData, ListWalletsOutputData, QueryPort};
 use crate::repository::ListRepository;
 use crate::view::Wallet;
 use anyhow::{Error, Result};
@@ -12,7 +12,7 @@ where
     wallet_repository: Query,
 }
 
-impl<Query> Port<ListWalletsInputData, ListWalletsOutputData> for ListWalletsInteractor<Query>
+impl<Query> QueryPort<ListWalletsInputData, ListWalletsOutputData> for ListWalletsInteractor<Query>
 where
     Query: ListRepository<Wallet>,
 {

@@ -4,6 +4,6 @@ pub trait InputData {}
 pub trait OutputData {}
 
 #[mockall::automock]
-pub trait Port<Input: InputData, Output: OutputData> {
+pub trait QueryPort<Input: InputData, Output: OutputData> {
     fn handle(&self, input: Input) -> Result<Output, Error>;
 }

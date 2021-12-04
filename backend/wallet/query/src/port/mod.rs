@@ -1,7 +1,5 @@
-#[allow(clippy::module_inception)]
-mod port;
-
 mod list_wallets;
+mod query_port;
 
 pub use self::list_wallets::*;
-pub use self::port::*;
+pub use self::query_port::*;

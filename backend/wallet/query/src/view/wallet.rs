@@ -1,5 +1,6 @@
 #[derive(Clone, Debug)]
 pub struct Wallet {
-    id: String,
-    balance: String,
+    pub id: String,
+    pub owner: String,
+    pub balance: String,
 }
