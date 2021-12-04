@@ -31,8 +31,10 @@ where
         self.controller.create(request)
     }
 
-    async fn list(&self, _: Request<ListRequest>) -> Result<Response<ListResponse>, Status> {
-        Err(Status::unimplemented("unimplemented"))
+    async fn list(&self, request: Request<ListRequest>) -> Result<Response<ListResponse>, Status> {
+        println!("{:?}", request); // TODO: logger を実装して println! を削除する
+
+        self.controller.list(request)
     }
 
     async fn get(&self, request: Request<GetRequest>) -> Result<Response<GetResponse>, Status> {
@@ -56,8 +58,14 @@ where
     C: Controller + std::marker::Sync + std::marker::Send + 'static,
 {
     pub async fn serve(self, addr: SocketAddr) -> Result<(), Box<dyn std::error::Error>> {
+        let reflection = tonic_reflection::server::Builder::configure()
+            .register_encoded_file_descriptor_set(interface::osaifu_wallet_v1::FILE_DESCRIPTOR_SET)
+            .build()
+            .unwrap();
+
         Server::builder()
             .add_service(WalletServiceServer::new(self))
+            .add_service(reflection)
             .serve(addr)
             .await?;
 

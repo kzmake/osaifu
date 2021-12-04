@@ -7,14 +7,15 @@ edition = "2018"
 
 [dependencies]
 domain = { path = "../domain" }
+query = { path = "../query" }
 usecase = { path = "../usecase" }
 mockall = "0.10.2"
 derive-new = "0.5.9"
 anyhow = "1.0.44"
 thiserror = "1.0.30"
-tonic = { version = "0.5.2", features = ["tls", "compression"] }
-prost = "0.8"
-prost-types = "0.8"
+tonic = { version = "0.6", features = ["codegen", "prost", "tls", "compression"] }
+prost = "0.9"
+prost-types = "0.9"
 
 [build-dependencies]
-tonic-build = { version = "0.5.2", features = ["prost", "compression"] }
+tonic-build = { version = "0.6", features = ["prost", "compression"] }
