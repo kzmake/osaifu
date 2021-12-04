@@ -1,5 +1,7 @@
 version: v1
 name: buf.build/kzmake/osaifu
+deps:
+  - buf.build/googleapis/googleapis
 build:
   excludes:
     - target
